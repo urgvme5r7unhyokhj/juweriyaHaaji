@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>juweriya</title>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        body {
+            background-color: #ffffff; 
+            color: #696969; 
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow-x: hidden;
+        }
+
+        /* --- Click to Enter Overlay --- */
+        #enter-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: #ffffff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            cursor: pointer;
+            transition: opacity 0.5s ease, visibility 0.5s;
+        }
+
+        #enter-overlay p {
+            color: #696969;
+            font-size: 1.5rem;
+            font-weight: 600;
+            letter-spacing: 1px;
+        }
+
+        #enter-overlay.hidden {
+            opacity: 0;
+            visibility: hidden;
+        }
+        
+        .audio-control {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background: #e0e0e0;
+            border: none;
+            border-radius: 12px;
+            padding: 10px 14px;
+            cursor: pointer;
+            font-size: 1.2rem;
+            color: #696969;
+            z-index: 10;
+        }
+
+        /* --- Bottom Corner "About Me" Button --- */
+        .about-btn-corner {
+            position: fixed;
+            bottom: 25px;
+            right: 25px;
+            background: #696969;
+            color: #ffffff;
+            padding: 12px 24px;
+            border-radius: 30px;
+            font-weight: 700;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            cursor: pointer;
+            border: none;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            transition: transform 0.2s ease, background-color 0.2s ease;
+            z-index: 100;
+        }
+
+        .about-btn-corner:hover {
+            transform: translateY(-3px);
+            background: #505050;
+        }
+
+        /* --- Main Content Container --- */
+        .container {
+            width: 100%;
+            max-width: 500px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+        }
+
+        /* Main Profile Picture */
+        .pfp-main {
+            width: 110px;
+            height: 110px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-bottom: 15px;
+            filter: grayscale(100%);
+        }
+
+        /* Glowing Username with Typewriter Effect */
+        .username-container {
+            min-height: 2.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 5px;
+        }
+
+        .username {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #696969;
+            text-shadow: 0 0 12px rgba(105, 105, 105, 0.4), 0 0 25px rgba(105, 105, 105, 0.2);
+            border-right: 2px solid #696969;
+            white-space: nowrap;
+            overflow: hidden;
+            padding-right: 4px;
+            animation: blink 0.75s step-end infinite;
+        }
+
+        @keyframes blink {
+            from, to { border-color: transparent }
+            50% { border-color: #696969; }
+        }
+
+        .location {
+            font-size: 0.9rem;
+            color: #888;
+            margin-bottom: 25px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+        }
+
+        /* Profile Card Widget (Fixed Width) */
+        .profile-card {
+            background: #e6e6e6;
+            color: #696969;
+            width: 280px;
+            padding: 12px 15px;
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.05);
+            margin-bottom: 25px;
+        }
+
+        .card-pfp {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            object-fit: cover;
+            filter: grayscale(100%);
+        }
+
+        .card-info {
+            text-align: left;
+            flex-grow: 1;
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 700;
+            font-size: 1rem;
+            color: #4a4a4a;
+        }
+
+        .card-badges {
+            display: flex;
+            gap: 5px;
+            font-size: 0.85rem;
+            color: #696969;
+        }
+
+        .card-subtext {
+            font-size: 0.8rem;
+            color: #888;
+            margin-top: 2px;
+        }
+
+        /* Glowing Social Icons */
+        .socials {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .social-icon {
+            display: inline-flex;
+            justify-content: center;
+            align-items: center;
+            width: 48px;
+            height: 48px;
+            background-color: rgba(255, 255, 255, 0.6);
+            border-radius: 50%;
+            text-decoration: none;
+            box-shadow: 0 0 10px rgba(105, 105, 105, 0.2);
+            transition: all 0.3s ease;
+        }
+
+        .social-icon:hover {
+            box-shadow: 0 0 18px rgba(105, 105, 105, 0.5);
+            transform: translateY(-2px);
+        }
+
+        .social-icon img {
+            width: 24px;
+            height: 24px;
+            object-fit: cover;
+            border-radius: 50%;
+        }
+
+        .social-icon i {
+            color: #696969;
+            font-size: 1.4rem;
+        }
+
+        /* View Counter */
+        .views {
+            font-size: 0.85rem;
+            color: #696969;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            margin-top: 10px;
+            font-weight: 600;
+        }
+
+        /* About Me Modal Overlay */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(5px);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 500;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+        }
+
+        .modal-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .modal-box {
+            background: #ffffff;
+            color: #696969;
+            padding: 30px;
+            border-radius: 20px;
+            width: 90%;
+            max-width: 400px;
+            position: relative;
+            text-align: left;
+            border: 1px solid #e0e0e0;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .close-modal {
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            background: none;
+            border: none;
+            color: #888;
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+
+        .close-modal:hover {
+            color: #333;
+        }
+.views-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            margin-top: 10px;
+        }
+
+        .profile-views-pill {
+            background: #e6e6e6;
+            color: #696969;
+            padding: 8px 18px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+        }
+.audio-control-container {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background: #e6e6e6;
+            border-radius: 20px;
+            padding: 8px 14px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            z-index: 10;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+        }
+
+        .audio-control {
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 1.1rem;
+            color: #696969;
+            display: flex;
+            align-items: center;
+        }
+
+        .volume-slider {
+            width: 80px;
+            height: 6px;
+            -webkit-appearance: none;
+            appearance: none;
+            background: #b0b0b0;
+            border-radius: 3px;
+            outline: none;
+            cursor: pointer;
+        }
+
+        .volume-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #696969;
+            cursor: pointer;
+        }
+
+        .bottom-left-views {
+            position: fixed;
+            bottom: 25px;
+            left: 25px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.9rem;
+            color: #696969;
+            font-weight: 600;
+            z-index: 100;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Click to Enter Screen -->
+    <div id="enter-overlay">
+        <p>click to enter...</p>
+    </div>
+
+    <!-- Audio Player -->
+    <audio id="bg-music" loop>
+        <source src="ni San-name.mp3" type="audio/mpeg">
+    </audio>
+
+    <!-- Volume/Mute Button -->
+    <button class="audio-control" id="audio-toggle">
+        <i class="fa-solid fa-volume-high"></i>
+    </button>
+
+    <!-- Bottom Right About Me Button -->
+    <button class="about-btn-corner" onclick="openAboutModal()">About Me</button>
+
+    <!-- Main Container -->
+    <div class="container">
+        <!-- Main Profile Picture -->
+        <img src="white hands.jpg" alt="Profile Picture" class="pfp-main">
+        
+        <!-- Typewriter Username -->
+        <div class="username-container">
+            <span class="username" id="typewriter"></span>
+        </div>
+        
+        <div class="location">
+            <i class="fa-solid fa-location-dot"></i> No where
+        </div>
+
+       
+        <!-- Social Media Links (Instagram, TikTok, Discord) -->
+        <div class="socials">
+            <a href="https://www.instagram.com/shamsahaaji_" target="_blank" class="social-icon">
+                <img src="Instagram.jpg" alt="Instagram">
+            </a>
+            
+            <a href="https://tiktok.com/@justqsazrzzz" target="_blank" class="social-icon">
+                <img src="tiktok.jpg" alt="TikTok">
+            </a>
+
+            <a href="https://discord.com/users/931300229221859388" target="_blank" class="social-icon">
+                <i class="fa-brands fa-discord"></i>
+            </a>
+        </div>
+
+        <!-- Real View Counter -->
+        <div class="views">
+            <i class="fa-regular fa-eye"></i> <span id="view-count">1</span>
+        </div>
+    </div>
+
+    <!-- About Me Modal -->
+    <div class="modal-overlay" id="about-modal">
+        <div class="modal-box">
+            <button class="close-modal" onclick="closeAboutModal()">&times;</button>
+            <h2 style="margin-bottom: 15px; font-size: 1.5rem; color: #696969;">About Me</h2>
+            <p style="color: #888; line-height: 1.6;">
+                Hi my name is juweriya and im 18. i enjoy playing video games a lot i play many diffrent games but my favorate is valorant. i also play roblox, call of duty, LOL and overwatch, i have one black cat named Jae, and im one of 9 siblings, i have 4 brothers and 5 sisters
+            </p>
+        </div>
+    </div>
+
+    <script>
+        const overlay = document.getElementById('enter-overlay');
+        const music = document.getElementById('bg-music');
+        const audioToggle = document.getElementById('audio-toggle');
+        const aboutModal = document.getElementById('about-modal');
+
+        // Click to Enter & Play Music
+        overlay.addEventListener('click', () => {
+            overlay.classList.add('hidden');
+            music.play().catch(error => console.log("Autoplay prevented:", error));
+            startTypewriter();
+        });
+
+        // Volume Toggle
+        audioToggle.addEventListener('click', () => {
+            if (music.paused) {
+                music.play();
+                audioToggle.innerHTML = '<i class="fa-solid fa-volume-high"></i>';
+            } else {
+                music.pause();
+                audioToggle.innerHTML = '<i class="fa-solid fa-volume-xmark"></i>';
+            }
+        });
+
+        // Typewriter Effect for Username
+        const nameText = "juweriya";
+        let i = 0;
+        function startTypewriter() {
+            if (i < nameText.length) {
+                document.getElementById("typewriter").innerHTML += nameText.charAt(i);
+                i++;
+                setTimeout(startTypewriter, 150);
+            }
+        }
+
+        // Animated Page Title
+        let titleText = "juweriya | welcome ";
+        setInterval(() => {
+            titleText = titleText.substring(1) + titleText.substring(0, 1);
+            document.title = titleText;
+        }, 300);
+
+        // View Counter Logic (Saves to local browser storage)
+        let views = localStorage.getItem('page_views');
+        if (views) {
+            views = parseInt(views) + 1;
+        } else {
+            views = 1;
+        }
+        localStorage.setItem('page_views', views);
+        document.getElementById('view-count').innerText = views;
+
+        // Modal Open/Close Logic
+        function openAboutModal() {
+            aboutModal.classList.add('active');
+        }
+
+        function closeAboutModal() {
+            aboutModal.classList.remove('active');
+        }
+
+        aboutModal.addEventListener('click', (e) => {
+            if (e.target === aboutModal) {
+                closeAboutModal();
+            }
+        });
+    </script>
+</body>
+</html>
